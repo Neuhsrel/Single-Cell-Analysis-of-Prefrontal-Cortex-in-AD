@@ -1,32 +1,28 @@
-# Microglial State Transitions in Alzheimer's Disease
 ### Single-nucleus RNA-seq analysis of disease-associated microglial heterogeneity  
-### in human prefrontal cortex — GSE174367
+### Human prefrontal cortex — GSE174367
 
 ---
 
 ## Motivation
 
 Microglia, the brain's resident immune cells, undergo profound transcriptional 
-remodelling in Alzheimer's disease (AD). Disease-associated microglial states,
+remodelling in Alzheimer's disease (AD). Disease-associated microglial (DAM) states,
 characterised by upregulation of *TREM2*, *APOE*, and *SPP1* alongside loss of 
 homeostatic markers *P2RY12* and *CX3CR1*, were first described in mouse models 
 (Keren-Shaul et al. 2017) and have since been partially recapitulated in human 
-postmortem tissue (Olah et al. 2020; Sun et al. 2023).
+postmortem tissue (Yun et al 2021; Sun et al. 2023).
 
-A key question remains underexplored in human snRNA-seq data: **do microglial 
-state transitions track more closely with amyloid plaque burden or neurofibrillary 
-tangle burden?** This distinction matters because it speaks to *when* in the 
-pathological cascade microglia become activated — a question with direct implications 
-for therapeutic timing and target selection.
+Hence, I aim to find out at what stage of the tangle burden and plaque burden, associated 
+with Alzhiemer's disease, affect the transition of homeostatic microglia to DAMs. This was done by 
+first identifying transcriptionally distinct subclusters of microglia, followed by pseudobulk analysis.
 
-This project uses publicly available human snRNA-seq data to characterise microglial 
-transcriptional substates in the prefrontal cortex and correlate their abundance 
-with independently recorded neuropathological staging.
-
+This project uses publicly available human snRNA-seq data from GSE174367 (Morabito et al. 2021)
+to characterise microglial transcriptional substates in the prefrontal cortex and correlate their
+abundance with the neuropathology of the respective donors.
 
 ---
 
-## Biological Questions
+## Questions guiding the analysis
 
 1. What transcriptionally distinct microglial substates exist in the prefrontal 
    cortex of AD and control donors?
@@ -49,29 +45,17 @@ with independently recorded neuropathological staging.
 |---|---|
 | Accession | GSE174367 |
 | Tissue | Prefrontal cortex (postmortem) |
-| Donors | 11 AD, 8 control |
+| Donors | 11 AD, 7 control |
 | Total nuclei (post-QC) | 31,178 |
 | Platform | 10x Genomics Chromium (GPL24676) |
 | Metadata | Diagnosis, Plaque.Stage, Tangle.Stage, Age, Sex, PMI, Batch, RIN |
 
-**A note on snRNA-seq and DAM signal:** snRNA-seq systematically undercaptures 
-cytoplasmic DAM-associated transcripts relative to scRNA-seq of fresh tissue. 
-Key DAM markers (*TREM2*, *SPP1*, *LPL*) are enriched in the cytosol, not the 
-nucleus. This limitation is inherent to all human postmortem brain studies and 
-means DAM signal is likely underestimated throughout. A continuous gene scoring 
-approach (`sc.tl.score_genes`) is used in addition to discrete clustering to 
-mitigate this.
-
-Human-validated marker genes (Olah et al. 2020; Sun et al. 2023) are used for 
-annotation rather than the murine DAM literature (Keren-Shaul et al. 2017), given 
-known cross-species transcriptional differences in microglial states.
-
 ---
 
-## Analytical Approach
+## Workflow (following SC best practices)
 
-### 1. Data Loading
-Raw 10x Genomics h5 matrix loaded via `sc.read_10x_h5` and aligned to donor 
+### 1. Loading the data 
+Raw 10x Genomics h5 matrix from NCBI GEO loaded via `sc.read_10x_h5` and aligned to donor 
 metadata via barcode index. Duplicate variable names resolved with 
 `var_names_make_unique`.
 
@@ -81,9 +65,7 @@ Cells filtered on three criteria:
 - Mitochondrial gene content: < 5%
 - Genes expressed in fewer than 3 cells removed
 
-This reduced the dataset from 61,472 to 31,178 nuclei. The 5% MT threshold 
-is conservative for postmortem snRNA-seq and may have removed some biologically 
-real nuclei with elevated ambient RNA — see Limitations.
+This reduced the dataset from 61,472 to 31,178 nuclei. 
 
 ### 3. Normalisation and Feature Selection
 Counts normalised to 10,000 per cell and log-transformed. Top 2,000 highly 
@@ -114,11 +96,11 @@ chosen over generic brain models to improve annotation specificity. CellTypist
 confirmed microglial identity for **clusters 4 and 5**, which also showed the 
 highest AD enrichment (67% and 71% AD respectively).
 
-### 8. Microglial Subclustering *(in progress)*
-Clusters 4 and 5 isolated and reclustered at finer resolution to resolve 
-DAM-like vs homeostatic substates within the microglial compartment.
+### 8. Microglial Subclustering 
+Clusters 4 and 5 isolated and reclustered at resolution of 0.5 to resolve 
+DAM-like vs homeostatic substates.
 
-### 9. DAM State Scoring *(planned)*
+### 9. DAM State Scoring
 Each microglial nucleus scored continuously against human-validated signatures:
 
 | State | Marker Genes |
@@ -129,22 +111,22 @@ Each microglial nucleus scored continuously against human-validated signatures:
 Downregulation of homeostatic markers in DAM-scored cells used as confirmatory 
 evidence, not primary annotation.
 
-### 10. Pathology Correlation *(planned)*
+### 10. Pathology Correlation 
 Donor-level pseudobulked DAM scores correlated against Plaque.Stage and 
-Tangle.Stage to ask whether microglial activation tracks amyloid or tangle 
-pathology more closely.
+Tangle.Stage using Spearman's correlation to see whether microglial activation 
+correlates to amyloid or tangle pathology more closely.
 
-### 11. Predictive Modelling *(planned)*
+### 11. Predictive Modelling 
 Multilayer perceptron (PyTorch) trained on pseudobulked microglial profiles 
 (donor × gene matrix) to predict AD diagnosis. 5-fold stratified cross-validation 
-used given the small cohort (n=19). SHAP values computed to identify gene features 
-driving predictions and assess overlap with known DAM markers.
-
+used given the small cohort (n=18). To interpret the model's decision-making, SHAP
+(SHapley Additive exPlanations) values were computed to rank feature importance and 
+reveal the direction of effect that specific genes had on predicting AD status for 
+each individual donor.
 ---
 
-## Key Findings
+## Results
 
-> *This section will be completed as the analysis progresses.*
 
 **Finding structure (to be filled in):**
 
@@ -243,10 +225,6 @@ alzheimer-microglia-snrnaseq/
   *Nature*, 570, 332–337.  
   *(ROSMAP single-cell atlas; marker gene reference)*
 
-- Olah M et al. (2020). Single cell RNA sequencing of human microglia uncovers a 
-  subset associated with Alzheimer's disease. *Nature Communications*, 11, 6129.  
-  *(Human microglial state markers — primary annotation reference)*
-
+- 
 - Sun N et al. (2023). Human microglial state dynamics in Alzheimer's disease 
   progression. *Cell*, 186(20), 4386–4403.  
-  *(Multi-region human AD microglial atlas — primary annotation reference)*
