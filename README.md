@@ -52,7 +52,7 @@ abundance with the neuropathology of the respective donors.
 
 ---
 
-## Workflow (following SC best practices)
+## Workflow (following single-cell best practices)
 
 ### 1. Loading the data 
 Raw 10x Genomics h5 matrix from NCBI GEO loaded via `sc.read_10x_h5` and aligned to donor 
@@ -115,30 +115,25 @@ Tangle.Stage using Spearman's correlation to see whether microglial activation
 correlates to amyloid or tangle pathology more closely.
 
 ### 11. Predictive Modelling 
-Multilayer perceptron (PyTorch) trained on pseudobulked microglial profiles 
-(donor × gene matrix) to predict AD diagnosis. 5-fold stratified cross-validation 
-used given the small cohort (n=18). To interpret the model's decision-making, SHAP
-(SHapley Additive exPlanations) values were computed to rank feature importance and 
-reveal the direction of effect that specific genes had on predicting AD status for 
-each individual donor.
+A Multi-Layer Perceptron (MLP) was built using Pytorch to predict the donor's diagnosis (AD vs Control)
+based on their pseudobulked microglial profiles. SHAP values were used for interpretation to see what 
+genes' expression contributed most to their predicted disease status.
+
 ---
 
 ## Results
 
-
-**Finding structure (to be filled in):**
-
-**1. Microglial cluster identity and AD enrichment**  
+**2. Microglial cluster identity and AD enrichment**  
 > [Observation: which clusters, what proportion AD]  
 > [Biological interpretation: what this suggests about microglial activation in AD PFC]  
 > [Hypothesis: what the next analysis should test]
 
-**2. DAM-like vs homeostatic substate resolution**  
+**3. DAM-like vs homeostatic substate resolution**  
 > [Observation: how many substates identified, which marker genes define them]  
 > [Biological interpretation: do substates match published human DAM signatures]  
 > [Hypothesis: ]
 
-**3. Pathology correlation — plaque vs tangle**  
+**4. Pathology correlation — plaque vs tangle**  
 > [Observation: correlation coefficients, which pathology stage tracks DAM score more closely]  
 > [Biological interpretation: what this implies about when microglia activate]  
 > [Hypothesis: ]
@@ -159,6 +154,10 @@ each individual donor.
 - **Aggressive MT filtering:** The < 5% MT threshold reduced nuclei by ~46%. 
   This may have disproportionately removed stressed but biologically informative 
   cells. Future work could explore relaxed thresholds with more granular QC metrics.
+  Note: A relaxed MT threshold of 10% recovered only 254 additional nuclei (0.8% increase),
+  confirming that the 5% threshold did not substantially bias cell recovery. The absence of
+  canonical DAM markers is likely due to snRNA-seq undercapture of cytoplasmic transcripts
+  rather than over-aggressive QC filtering.
 
 - **Single brain region:** Only prefrontal cortex profiled. Microglial heterogeneity 
   across regions with differential amyloid and tangle burden (e.g. entorhinal cortex, 
@@ -174,11 +173,7 @@ each individual donor.
 - **No excitatory neuron cluster recovered:** . Absent in both AD and control samples, suggesting technical rather than 
   disease-related depletion. Diffuse low-level NRGN signal across clusters is consistent with ambient RNA 
   contamination rather than a true neuronal population.
-  
-- **MT filtering sensitivity check:** A relaxed MT threshold of 10% recovered only 254 additional nuclei (0.8% increase),
-  confirming that the 5% threshold did not substantially bias cell recovery. The absence of canonical DAM markers is
-  attributable to snRNA-seq undercapture of cytoplasmic transcripts rather than
-  over-aggressive QC filtering.
+
 
 
 ## Repository Structure
