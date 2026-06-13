@@ -261,11 +261,10 @@ alzheimer-microglia-snrnaseq/
 
 - Keren-Shaul H et al. (2017). A Unique Microglia Type Associated with Restricting 
   Development of Alzheimer's Disease. *Cell*, 169(7), 1276–1290.  
-  *(Foundational DAM concept — mouse model)*
+
 
 - Mathys H et al. (2019). Single-cell transcriptomic analysis of Alzheimer's disease. 
   *Nature*, 570, 332–337.  
-  *(ROSMAP single-cell atlas; marker gene reference)*
 
 -  Morabito S, Miyoshi E, Michael N, Shahin S et al. Single-nucleus chromatin accessibility
    and transcriptomic characterization of Alzheimer's disease. Nat Genet 2021 Aug;53(8):1143-1155.
